@@ -37,3 +37,24 @@ if (!result.ok) {
 ```bash
 npm test
 ```
+
+### API Server
+
+Der Backend-Server kapselt Directus und stellt eigene Endpoints bereit:
+
+- `GET /api/products`
+- `GET /api/products/:slug`
+
+Konfiguration (z. B. `.env`):
+
+```bash
+DIRECTUS_URL=http://10.115.3.12:8055
+DIRECTUS_TOKEN=dein_token_optional
+PORT=4000
+```
+
+Starten:
+
+```bash
+npm run dev
+```
