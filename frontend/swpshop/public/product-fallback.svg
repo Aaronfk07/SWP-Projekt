@@ -1,0 +1,22 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" rx="48" fill="#F1F3F5" />
+  <path
+    d="M240 254C240 225.49 263.49 202 292 202H508C536.51 202 560 225.49 560 254V370C560 398.51 536.51 422 508 422H292C263.49 422 240 398.51 240 370V254Z"
+    fill="#D9E2EC"
+  />
+  <circle cx="320" cy="284" r="34" fill="#B3C6D8" />
+  <path
+    d="M280 374L350 310L402 350L448 306L520 374H280Z"
+    fill="#9FB5C8"
+  />
+  <text
+    x="400"
+    y="470"
+    text-anchor="middle"
+    font-family="Space Grotesk, Arial"
+    font-size="28"
+    fill="#617080"
+  >
+    Kein Bild vorhanden
+  </text>
+</svg>
