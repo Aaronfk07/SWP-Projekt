@@ -1,279 +1,301 @@
-Headless Shop – Next.js + Directus
+# 🛍️ Headless Shop – Next.js + Directus
 
-Dieses Repository implementiert einen SEO-fähigen Produktkatalog auf Basis von Next.js und Directus.
-Produkte werden zentral im CMS gepflegt und über eine definierte REST-API serverseitig im Frontend gerendert.
+Ein SEO-freundlicher, performanter Produkt-Shop auf Basis von **Next.js** (Frontend) und **Directus** (Headless CMS).
 
-Zielsetzung
+Ziel ist eine saubere Trennung zwischen:
 
-Zentrale Content-Pflege ohne Code-Änderungen
+- Content Management (Directus)
+- API-Client-Schicht (zentral, testbar, wiederverwendbar)
+- Präsentationslogik (Next.js)
 
-Klare API-Abstraktion (keine CMS-Details im UI)
+---
 
-SEO-freundliches Rendering (SSR / SSG / ISR)
+# 📦 Inhaltsverzeichnis
 
-Strikte Publish-Regeln (keine Entwürfe öffentlich)
+- [Projektziel](#-projektziel)
+- [Architektur](#-architektur)
+- [API-Client-Schicht](#-api-client-schicht)
+- [Content-Modell (Directus)](#-content-modell-directus)
+- [Rendering-Strategie](#-rendering-strategie)
+- [Features](#-features)
+- [Sicherheit & Publishing-Regeln](#-sicherheit--publishing-regeln)
+- [Environment Variablen](#-environment-variablen)
+- [Testbarkeit](#-testbarkeit)
+- [Deployment](#-deployment)
+- [Erweiterungsmöglichkeiten](#-erweiterungsmöglichkeiten)
 
-Testbare, wartbare Architektur
+---
 
-Architektur
-Directus (REST API)
-        │
-        ▼
-API Client Layer (/lib/directus oder /services/api)
-        │
-        ▼
-Next.js (Server Rendering)
-        │
-        ▼
+# Projektmanagment
+
+- Notion: https://www.notion.so/30b317fe02fd8095bb6edef93fcbc216?v=30b317fe02fd805a898e000ccbeed261&source=copy_link
+
+# 🎯 Projektziel
+
+Dieses Projekt implementiert eine produktive Headless-Commerce-Struktur mit folgenden Kernzielen:
+
+- Produkte werden ausschließlich in Directus gepflegt
+- Die Website zeigt nur veröffentlichte Produkte
+- SEO-optimiertes Rendering (SSR/SSG/ISR)
+- Zentrale API-Logik ohne Directus-Leaks in UI-Komponenten
+- Saubere Fehlerbehandlung
+- Testbare Datenzugriffe
+
+---
+
+# 🏗 Architektur
+
+## High-Level Überblick
+
+```
+Directus (CMS)
+      ↓
+API Client Layer (/lib/directus)
+      ↓
+Next.js Server Components / SSR / ISR
+      ↓
 UI Komponenten
+```
 
-Grundprinzipien
+### Prinzipien
 
-Zentrale API-Client-Schicht
+- Keine Directus-spezifischen Response-Strukturen im UI
+- Mapping in ein internes Datenmodell
+- Serverseitige API-Calls bei Secret-Nutzung
+- Konsistente Fehlerobjekte
 
-Internes, stabiles Datenmodell
+---
 
-Konsistente Fehlerobjekte
+# 🔌 API-Client-Schicht
 
-Environment-basierte Konfiguration
+Zentrale Datenzugriffe über ein dediziertes Modul.
 
-Serverseitige Filterung veröffentlichter Inhalte
+## Struktur
 
-API-Client
-
-Zentrales Modul, z. B.:
-
+```
 /lib/directus
+  ├── client.ts
+  ├── products.ts
+  └── types.ts
+```
 
-Verantwortlichkeiten
+## Anforderungen
 
-Kapselt:
+- Zentrale REST-Kommunikation
+- Kapselung von:
+  - Base URL
+  - Auth Token
+- Methoden:
+  - `getProducts()`
+  - `getProductBySlug(slug)`
+  - `getFilteredProducts(filters)`
+- Einheitliche Fehlerstruktur
+- Mockbare Fetch-Implementierung
+- Keine ungehandelten `throw` in UI
 
-Base URL
+## Beispiel Fehlerobjekt
 
-Auth Token
+```ts
+export type ApiError = {
+  code: string;
+  message: string;
+  status: number;
+};
+```
 
-Führt REST-Requests aus
+---
 
-Mappt API-Responses auf internes Datenmodell
+# 🗂 Content-Modell (Directus)
 
-Gibt strukturierte Fehlerobjekte zurück
+## Collection: `products`
 
-Ist über Mocking testbar
+| Feld | Typ | Pflicht |
+|------|------|---------|
+| name | string | ✅ |
+| slug | string | ✅ |
+| description | text | ✅ |
+| price | decimal | ✅ |
+| status | enum (draft / published) | ✅ |
+| publish_date | datetime | optional |
+| images | relation (files) | optional |
+| availability | string/enum | optional |
+| tags | m2m | optional |
+| categories | m2m | optional |
 
-Kernfunktionen
-getProducts(filters?)
-getProductBySlug(slug)
-searchProducts(query)
-
-
-Keine Directus-spezifischen Details dürfen in UI-Komponenten verwendet werden.
-
-Datenmodell (Directus)
-
-Collection: products
-
-Pflichtfelder
-
-name (string, required)
-
-price (number, required)
-
-slug (unique)
-
-status oder publish_date
-
-description
-
-images
-
-optional: sku, stock
-
-Publish-Regel
+## Publishing-Logik
 
 Ein Produkt gilt als veröffentlicht, wenn:
 
-status = "published"
-oder
+```
+status === "published"
+UND
+(publish_date <= now ODER publish_date ist null)
+```
 
-publish_date <= aktuelles Datum
-
-Die Website zeigt ausschließlich veröffentlichte Produkte.
-Entwürfe sind weder über Listen noch über direkte URLs erreichbar.
-
-Produktübersicht
-
-Zeigt veröffentlichte Produkte
-
-Mindestens: Name, Preis, Vorschaubild
-
-Leerer Zustand bei keiner Verfügbarkeit
-
-Lade- und Fehlerzustände sichtbar
-
-Daten werden über API geladen (keine Hardcodierung)
-
-Filter
-
-Kategorien/Tags aus Directus
-
-Mehrfachfilter möglich
-
-Aktive Filter sichtbar
-
-Einzelnes Entfernen möglich
-
-Reset-Funktion
-
-Filter werden als Query-Parameter an die REST API übergeben
-
-Suche
-
-Suche nach Name (optional SKU)
-
-API-basierte Anfrage
-
-„Keine Treffer“-Zustand
-
-Stabil bei Fehlern
-
-Suchbegriff zurücksetzbar
-
-Produktdetailseite
-
-Route:
-
-/products/[slug]
-
-
-Anzeige:
-
-Name
-
-Beschreibung
-
-Preis
-
-Verfügbarkeit (falls vorhanden)
-
-Mindestens ein Bild, sonst Fallback
-
-Fehlerfälle:
-
-Ungültiger Slug → 404
-
-Unveröffentlichtes Produkt → 404
-
-Daten werden ausschließlich über die API geladen.
-
-Rendering-Strategie
-
-Umgesetzt mit Server Rendering in Next.js.
-
-Optionen
-
-SSR für dynamische Inhalte
-
-SSG für statische Generierung
-
-ISR mit konfigurierbarem Revalidate-Zeitraum
-
-Beispiel:
-
-export const revalidate = 60;
-
-
-API-Requests erfolgen serverseitig, wenn Secrets benötigt werden.
-
-SEO-Anforderung: Produktdaten sind im HTML enthalten (kein reines Client-Rendering).
-
-Bildverwaltung
-
-Upload in Directus
-
-Zuordnung zu Produkten
-
-Responsive Darstellung im Frontend
-
-Unterstützung mehrerer Bilder (Galerie/definierte Reihenfolge)
-
-Fallback-Placeholder
-
-Optional: Alt-Texte aus CMS
-
-Bild-URLs werden über die API geliefert.
-
-Sicherheit & Konfiguration
-Environment Variablen
-DIRECTUS_URL=
-DIRECTUS_TOKEN=
-
-
-Keine Secrets im Frontend
-
-Konfigurierbar pro Umgebung (Dev / Staging / Prod)
-
-Berechtigungen
-
-API liefert nur erlaubte Daten
-
-Serverseitige Filterung auf veröffentlichte Produkte
-
-Entwürfe sind nicht öffentlich erreichbar
+Die Website filtert serverseitig ausschließlich veröffentlichte Produkte.
 
 Optional: Preview-Modus für Admins.
 
-Fehlerbehandlung
+---
 
-API-Fehler (401, 500, Timeout) werden abgefangen
+# 🖥 Rendering-Strategie
 
-Konsistente Fehlerobjekte aus dem Client
+## Produktübersicht
 
-UI zeigt benutzerfreundliche Fehlerzustände
+- SEO-freundlich (HTML enthält Produktdaten)
+- SSR oder ISR
+- Revalidate konfigurierbar
 
-Keine ungehandelten Exceptions im Frontend
+Beispiel ISR:
 
-Testing
+```ts
+export const revalidate = 60;
+```
 
-Fetch ist mockbar
+## Produktdetailseite
 
-API-Client isoliert testbar
+Route:
 
-UI testet gegen Client-Interface, nicht gegen Directus
+```
+/products/[slug]
+```
 
-Setup
-1. Directus konfigurieren
+- Serverseitige Datenabfrage
+- 404 bei ungültigem Slug
+- Fehlerzustände sauber gerendert
 
-Collection products erstellen
+---
 
-Felder definieren
+# 🔍 Features
 
-Berechtigungen setzen
+---
 
-Publish-Logik festlegen
+## 🛒 Produktübersicht
 
-2. Environment konfigurieren
-DIRECTUS_URL=https://your-instance
-DIRECTUS_TOKEN=your-token
+- Automatische Produktliste beim Seitenaufruf
+- Anzeige:
+  - Name
+  - Preis
+  - Vorschaubild
+- Leerer Zustand bei 0 Produkten
+- Lade- und Fehlerzustände sichtbar
+- Keine hardcodierten Produkte
 
-3. Development starten
-npm install
-npm run dev
+---
 
-Abgedeckte Anforderungen
+## 🧾 Produktdetailseite
 
-Zentrale API-Client-Schicht
+Zeigt:
 
-CMS-basierte Produktpflege
+- Name
+- Beschreibung
+- Preis
+- Verfügbarkeit (falls vorhanden)
+- Mindestens 1 Produktbild (Fallback falls keines existiert)
 
-Filter & Suche
+Ungültige Slugs liefern 404.
 
-SEO-optimiertes Server Rendering
+---
 
-Produktdetailseiten mit 404-Handling
+## 🏷 Filter (Kategorien & Tags)
 
-Publish-Logik
+- Filteroptionen aus Directus
+- Mehrfachauswahl möglich
+- Aktive Filter sichtbar
+- Einzelnes Entfernen möglich
+- "Alle zurücksetzen"-Funktion
+- Query-Parameter werden korrekt an REST API übergeben
 
-Bildverwaltung
+Beispiel:
 
-Sichere API-Integration
+```
+/products?category=shirts&tags=sale,new
+```
+
+---
+
+## 🔎 Suche
+
+- Suchfeld in Produktübersicht
+- Suche nach:
+  - Name
+  - optional SKU
+- API-basierte Suche
+- "Keine Treffer"-Zustand
+- Suchbegriff löschbar
+
+---
+
+## 🖼 Medienverwaltung
+
+- Bilder-Upload in Directus
+- Zuordnung zu Produkten
+- Mehrere Bilder möglich
+- Galerie/Slider unterstützbar
+- Responsive Images
+- Placeholder bei fehlenden Bildern
+- Optional: Alt-Texte im Frontend nutzbar
+
+---
+
+# 🔐 Sicherheit & Publishing-Regeln
+
+- API-URL und Tokens über Environment Variablen
+- Keine Secrets im Frontend
+- Serverseitige Filterung auf veröffentlichte Produkte
+- Entwürfe:
+  - Nicht in Listen sichtbar
+  - Nicht über Direkt-URL erreichbar
+- API liefert nur berechtigte Daten
+
+---
+
+# 🌍 Environment Variablen
+
+```
+DIRECTUS_URL=
+DIRECTUS_TOKEN=
+NEXT_PUBLIC_SITE_URL=
+```
+
+Unterstützt:
+
+- Development
+- Staging
+- Production
+
+---
+
+# 🧪 Testbarkeit
+
+- Fetch mockbar
+- API-Client isoliert testbar
+- UI unabhängig vom CMS-Response-Format
+- Fehlerobjekte standardisiert
+- Keine CMS-Logik in Komponenten
+
+---
+
+# 🚀 Deployment
+
+- Konfiguration über `.env` Dateien
+- ISR Revalidate-Zeiten pro Umgebung definierbar
+- Server-seitige Requests für Secret-Nutzung
+
+---
+
+# 📌 Erweiterungsmöglichkeiten
+
+- Preview Mode
+- Pagination
+- GraphQL statt REST
+- Internationalisierung (i18n)
+- Caching Layer
+- Warenkorb / Checkout Integration
+- Role-based Access für Preview
+
+---
+
+# 📄 Lizenz
+
+Projektintern definieren.
