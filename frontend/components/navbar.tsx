@@ -12,7 +12,7 @@ export function Navbar() {
             href="/"
             className="text-lg font-semibold tracking-tight text-gray-900 hover:text-gray-600 transition-colors"
           >
-            SWP Shop
+            GoonerShop
           </Link>
 
           <div className="flex items-center gap-2">
