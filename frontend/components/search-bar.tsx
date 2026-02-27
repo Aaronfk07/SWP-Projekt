@@ -7,6 +7,9 @@ interface SearchBarProps {
   defaultValue?: string;
 }
 
+/**
+ * Live search input – light glass style.
+ */
 export function SearchBar({ defaultValue = "" }: SearchBarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -27,15 +30,8 @@ export function SearchBar({ defaultValue = "" }: SearchBarProps) {
 
   return (
     <div className="relative">
-      <input
-        type="search"
-        defaultValue={defaultValue}
-        onChange={handleChange}
-        placeholder="Produkte suchen..."
-        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 pl-10 text-white placeholder-white/30 backdrop-blur-sm focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/20"
-      />
       <svg
-        className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30"
+        className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -47,8 +43,17 @@ export function SearchBar({ defaultValue = "" }: SearchBarProps) {
           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
         />
       </svg>
+      <input
+        type="search"
+        defaultValue={defaultValue}
+        onChange={handleChange}
+        placeholder="Produkte suchen…"
+        className="w-full glass rounded-xl px-4 py-3 pl-11 text-sm text-gray-900
+          placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+      />
       {isPending && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white/60" />
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin
+          rounded-full border-2 border-gray-200 border-t-gray-600" />
       )}
     </div>
   );

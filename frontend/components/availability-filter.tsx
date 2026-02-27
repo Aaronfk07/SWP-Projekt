@@ -8,6 +8,9 @@ interface AvailabilityFilterProps {
   current?: string;
 }
 
+/**
+ * Filter chips for availability – light glass style.
+ */
 export function AvailabilityFilter({ options, current }: AvailabilityFilterProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -30,18 +33,17 @@ export function AvailabilityFilter({ options, current }: AvailabilityFilterProps
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm text-white/40">Verfügbarkeit:</span>
+      <span className="text-sm text-gray-400">Filter:</span>
       {options.map((opt) => (
         <button
           key={opt}
           onClick={() => handleClick(opt)}
           disabled={isPending}
-          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all border
-            ${
-              current === opt
-                ? "bg-white/20 text-white border-white/30"
-                : "bg-white/5 text-white/50 border-white/10 hover:border-white/20 hover:text-white/70"
-            }`}
+          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+            current === opt
+              ? "bg-gray-900 text-white"
+              : "glass text-gray-600 hover:text-gray-900"
+          }`}
         >
           {opt}
         </button>
@@ -50,7 +52,7 @@ export function AvailabilityFilter({ options, current }: AvailabilityFilterProps
         <button
           onClick={() => handleClick(current)}
           disabled={isPending}
-          className="text-sm text-white/30 hover:text-white/60 transition-colors"
+          className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
         >
           × zurücksetzen
         </button>

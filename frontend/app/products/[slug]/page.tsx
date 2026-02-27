@@ -11,13 +11,9 @@ interface ProductDetailPageProps {
 }
 
 /**
- * Product detail page.
- * Server component – fetches a single product by slug.
- * Returns 404 if the product does not exist.
+ * Product detail page – Apple Liquid Glass design.
  */
-export default async function ProductDetailPage({
-  params,
-}: ProductDetailPageProps) {
+export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
   const product = await productService.getBySlug(slug);
 
@@ -29,23 +25,20 @@ export default async function ProductDetailPage({
     <section className="mx-auto max-w-6xl px-6 py-12">
       {/* Breadcrumb */}
       <nav className="mb-8 animate-fade-in-up">
-        <ol className="flex items-center gap-2 text-sm text-white/40">
+        <ol className="flex items-center gap-2 text-sm text-gray-400">
           <li>
-            <Link href="/" className="hover:text-white/70 transition-colors">
+            <Link href="/" className="hover:text-gray-700 transition-colors">
               Start
             </Link>
           </li>
           <li>/</li>
           <li>
-            <Link
-              href="/products"
-              className="hover:text-white/70 transition-colors"
-            >
+            <Link href="/products" className="hover:text-gray-700 transition-colors">
               Produkte
             </Link>
           </li>
           <li>/</li>
-          <li className="text-white/70 truncate max-w-xs">{product.name}</li>
+          <li className="text-gray-700 truncate max-w-xs">{product.name}</li>
         </ol>
       </nav>
 
@@ -57,7 +50,7 @@ export default async function ProductDetailPage({
         {/* Right: Product Info */}
         <div className="flex flex-col justify-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
               {product.name}
             </h1>
 
@@ -74,11 +67,11 @@ export default async function ProductDetailPage({
           {/* Description */}
           {product.description && (
             <GlassCard className="p-6">
-              <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-white/40">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-gray-400">
                 Beschreibung
               </h2>
               <div
-                className="prose prose-invert prose-sm max-w-none text-white/70 leading-relaxed"
+                className="prose prose-sm max-w-none text-gray-600 leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: product.description }}
               />
             </GlassCard>
@@ -87,21 +80,12 @@ export default async function ProductDetailPage({
           {/* Back link */}
           <Link
             href="/products"
-            className="inline-flex items-center gap-2 text-sm text-white/40
-              hover:text-white/70 transition-colors w-fit"
+            className="inline-flex items-center gap-2 text-sm text-gray-400
+              hover:text-gray-700 transition-colors w-fit"
           >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 17l-5-5m0 0l5-5m-5 5h12"
-              />
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M11 17l-5-5m0 0l5-5m-5 5h12" />
             </svg>
             Zurück zur Übersicht
           </Link>

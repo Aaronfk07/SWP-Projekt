@@ -144,9 +144,11 @@ function mapProduct(item) {
 }
 
 function mergePublishFilter(userFilter) {
-  const publishFilter = { status: { _eq: "published" } };
-  if (!userFilter) return publishFilter;
-  return { _and: [publishFilter, userFilter] };
+  // TODO: Aktivieren sobald das status-Feld in Directus eingerichtet ist (Sprint 3)
+  // const publishFilter = { status: { _eq: "published" } };
+  // if (!userFilter) return publishFilter;
+  // return { _and: [publishFilter, userFilter] };
+  return userFilter;
 }
 
 function mapErrorToStatus(error) {

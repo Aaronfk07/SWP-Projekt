@@ -7,9 +7,7 @@ import { SearchBar } from "@/components/search-bar";
 import { AvailabilityFilter } from "@/components/availability-filter";
 
 /**
- * Product listing page.
- * Server component – fetches products from the backend API.
- * Supports search via ?search= and availability filter via ?availability=.
+ * Product listing page – Apple Liquid Glass design.
  */
 export default async function ProductsPage({
   searchParams,
@@ -28,12 +26,10 @@ export default async function ProductsPage({
       err instanceof Error ? err.message : "Produkte konnten nicht geladen werden.";
   }
 
-  // Apply availability filter locally from already-fetched products
   const products = availability
     ? allProducts.filter((p) => p.availability === availability)
     : allProducts;
 
-  // Collect unique availability values for filter buttons
   const availabilityOptions = [
     ...new Set(allProducts.map((p) => p.availability).filter(Boolean)),
   ] as string[];
@@ -41,13 +37,11 @@ export default async function ProductsPage({
   return (
     <section className="mx-auto max-w-7xl px-6 py-12">
       {/* Header */}
-      <div className="mb-12 animate-fade-in-up">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          <span className="bg-gradient-to-r from-white via-white/90 to-white/60 bg-clip-text text-transparent">
-            Unsere Produkte
-          </span>
+      <div className="mb-10 animate-fade-in-up">
+        <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+          Unsere Produkte
         </h1>
-        <p className="mt-4 text-lg text-white/40">
+        <p className="mt-3 text-lg text-gray-400 font-light">
           Stöbere durch unser Sortiment und finde genau das Richtige.
         </p>
       </div>
@@ -60,38 +54,35 @@ export default async function ProductsPage({
           </Suspense>
           {availabilityOptions.length > 0 && (
             <Suspense>
-              <AvailabilityFilter
-                options={availabilityOptions}
-                current={availability}
-              />
+              <AvailabilityFilter options={availabilityOptions} current={availability} />
             </Suspense>
           )}
         </div>
       )}
 
-      {/* Error State */}
-      {error && (
-        <GlassCard className="p-8 text-center">
-          <p className="text-red-300">{error}</p>
-          <p className="mt-2 text-sm text-white/40">
-            Bitte stelle sicher, dass der Backend-Server läuft.
-          </p>
-        </GlassCard>
-      )}
-
-      {/* Result count when filtering */}
+      {/* Result count */}
       {!error && (search || availability) && (
-        <p className="mb-4 text-sm text-white/40">
+        <p className="mb-4 text-sm text-gray-400">
           {products.length} Produkt{products.length !== 1 ? "e" : ""} gefunden
           {search && ` für „${search}"`}
           {availability && ` · ${availability}`}
         </p>
       )}
 
+      {/* Error State */}
+      {error && (
+        <GlassCard className="p-8 text-center">
+          <p className="text-red-500">{error}</p>
+          <p className="mt-2 text-sm text-gray-400">
+            Bitte stelle sicher, dass der Backend-Server läuft.
+          </p>
+        </GlassCard>
+      )}
+
       {/* Empty State */}
       {!error && products.length === 0 && (
         <GlassCard className="p-12 text-center">
-          <p className="text-xl text-white/50">
+          <p className="text-xl text-gray-400">
             {search || availability
               ? "Keine Produkte für diese Suche gefunden."
               : "Keine Produkte gefunden."}

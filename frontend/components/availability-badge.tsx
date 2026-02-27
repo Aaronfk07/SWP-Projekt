@@ -3,8 +3,7 @@ interface AvailabilityBadgeProps {
 }
 
 /**
- * Displays stock/availability status as a pill badge.
- * Color-coded: green for available, yellow for limited, red/gray for out of stock.
+ * Stock status badge – light colors for glass design.
  */
 export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
   const lower = availability.toLowerCase();
@@ -18,15 +17,15 @@ export function AvailabilityBadge({ availability }: AvailabilityBadgeProps) {
     lower.includes("in stock") ||
     lower.includes("auf lager")
   ) {
-    colorClasses = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+    colorClasses = "bg-emerald-100 text-emerald-700 border-emerald-200";
   } else if (
     lower.includes("wenig") ||
     lower.includes("limited") ||
     lower.includes("low")
   ) {
-    colorClasses = "bg-amber-500/20 text-amber-300 border-amber-500/30";
+    colorClasses = "bg-amber-100 text-amber-700 border-amber-200";
   } else {
-    colorClasses = "bg-red-500/20 text-red-300 border-red-500/30";
+    colorClasses = "bg-red-100 text-red-700 border-red-200";
   }
 
   return (
