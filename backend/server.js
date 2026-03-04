@@ -81,7 +81,11 @@ function extractAssetId(entry) {
     }
 
     if (entry.directus_files_id) {
-      return String(entry.directus_files_id);
+      const nested = entry.directus_files_id;
+      if (typeof nested === "object" && nested?.id) {
+        return String(nested.id);
+      }
+      return String(nested);
     }
 
     if (entry.file?.id) {
@@ -92,16 +96,41 @@ function extractAssetId(entry) {
   return null;
 }
 
+function extractImageAlt(entry) {
+  if (!entry || typeof entry !== "object") {
+    return null;
+  }
+
+  if (typeof entry.title === "string" && entry.title.trim()) {
+    return entry.title.trim();
+  }
+
+  const nested = entry.directus_files_id;
+  if (nested && typeof nested === "object") {
+    if (typeof nested.title === "string" && nested.title.trim()) {
+      return nested.title.trim();
+    }
+  }
+
+  if (entry.file && typeof entry.file === "object") {
+    if (typeof entry.file.title === "string" && entry.file.title.trim()) {
+      return entry.file.title.trim();
+    }
+  }
+
+  return null;
+}
+
 function extractImageUrls(item) {
   const candidates = [item?.images, item?.image, item?.gallery].filter(Boolean);
-  const assetIds = [];
+  const assets = [];
 
   candidates.forEach((candidate) => {
     if (Array.isArray(candidate)) {
       candidate.forEach((entry) => {
         const id = extractAssetId(entry);
         if (id) {
-          assetIds.push(id);
+          assets.push({ id, alt: extractImageAlt(entry) });
         }
       });
       return;
@@ -109,13 +138,13 @@ function extractImageUrls(item) {
 
     const id = extractAssetId(candidate);
     if (id) {
-      assetIds.push(id);
+      assets.push({ id, alt: extractImageAlt(candidate) });
     }
   });
 
-  return assetIds
-    .map((assetId) => buildAssetUrl(assetId))
-    .filter(Boolean);
+  return assets
+    .map(({ id, alt }) => ({ url: buildAssetUrl(id), alt }))
+    .filter((img) => img.url !== null);
 }
 
 function mapProduct(item) {
@@ -270,17 +299,26 @@ app.get("/api/products", async (req, res) => {
 app.get("/api/products/:slug", async (req, res) => {
   const slug = req.params.slug;
 
-  const result = await productsApi.queryProducts({
+  // 1. Try direct primary-key lookup (works even when no slug field exists in Directus
+  //    and the slug is actually the item id).
+  const directResult = await productsApi.getProductDetail(slug);
+  if (directResult.ok && directResult.data) {
+    res.json({ data: mapProduct(directResult.data) });
+    return;
+  }
+
+  // 2. Fall back to filtering by the slug field.
+  const filterResult = await productsApi.queryProducts({
     filter: mergePublishFilter({ slug: { _eq: slug } }),
     limit: 1,
   });
 
-  if (!result.ok) {
-    sendError(res, result.error);
+  if (!filterResult.ok) {
+    sendError(res, filterResult.error);
     return;
   }
 
-  const item = result.data[0];
+  const item = filterResult.data[0];
   if (!item) {
     res.status(404).json({
       error: {

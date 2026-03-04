@@ -1,4 +1,12 @@
 /**
+ * A product image with URL and optional alt text sourced from Directus file metadata.
+ */
+export interface ProductImage {
+  url: string;
+  alt: string | null;
+}
+
+/**
  * Represents a product as returned by the backend API.
  */
 export interface Product {
@@ -8,7 +16,7 @@ export interface Product {
   description: string;
   price: number | null;
   availability: string | null;
-  images: string[];
+  images: ProductImage[];
   status: string | null;
 }
 

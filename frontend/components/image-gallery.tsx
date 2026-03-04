@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { ProductImage } from "@/components/product-image";
+import type { ProductImage as ProductImageType } from "@/lib/types/product";
 
 interface ImageGalleryProps {
-  images: string[];
+  images: ProductImageType[];
   alt: string;
 }
 
@@ -15,15 +16,15 @@ interface ImageGalleryProps {
 export function ImageGallery({ images, alt }: ImageGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const hasImages = images.length > 0;
+  const current = images[selectedIndex] ?? null;
 
   return (
     <div className="space-y-4">
       {/* Main Image */}
       <div className="relative aspect-square overflow-hidden rounded-3xl border border-white/10 bg-white/5">
         <ProductImage
-          src={hasImages ? images[selectedIndex] : null}
-          alt={alt}
+          src={current?.url ?? null}
+          alt={current?.alt ?? alt}
           priority
         />
       </div>
@@ -31,11 +32,11 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
       {/* Thumbnails */}
       {images.length > 1 && (
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {images.map((src, index) => (
+          {images.map((img, index) => (
             <button
-              key={src}
+              key={img.url}
               onClick={() => setSelectedIndex(index)}
-              className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border
+              className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border
                 transition-all duration-200
                 ${
                   index === selectedIndex
@@ -44,7 +45,10 @@ export function ImageGallery({ images, alt }: ImageGalleryProps) {
                 }
               `}
             >
-              <ProductImage src={src} alt={`${alt} – Bild ${index + 1}`} />
+              <ProductImage
+                src={img.url}
+                alt={img.alt ?? `${alt} – Bild ${index + 1}`}
+              />
             </button>
           ))}
         </div>
