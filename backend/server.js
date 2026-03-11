@@ -169,6 +169,7 @@ function mapProduct(item) {
     availability: availability ? String(availability) : null,
     images: extractImageUrls(item),
     status: status ? String(status) : null,
+    sku: item?.sku ? String(item.sku) : null,
   };
 }
 
@@ -295,16 +296,16 @@ app.get("/api/products", async (req, res) => {
     return;
   }
 
-  const searchTerm = typeof req.query.search === "string" ? req.query.search : undefined;
-  const searchFilter = buildSearchFilter(searchTerm);
-  const combinedFilter = mergeFilters(mergePublishFilter(filter), searchFilter);
+  const searchTerm = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
 
+  // Search is applied in-process after fetching to avoid Directus filter permission issues.
+  // Directus filter permissions may block _icontains queries even when read access is granted.
   const result = await productsApi.listProducts({
-    filter: combinedFilter,
+    filter: mergePublishFilter(filter),
     fields: parseCsv(req.query.fields),
     sort: parseCsv(req.query.sort),
-    limit: parseNumber(req.query.limit),
-    page: parseNumber(req.query.page),
+    limit: searchTerm ? undefined : parseNumber(req.query.limit),
+    page: searchTerm ? undefined : parseNumber(req.query.page),
   });
 
   if (!result.ok) {
@@ -312,8 +313,19 @@ app.get("/api/products", async (req, res) => {
     return;
   }
 
+  let products = result.data.map(mapProduct);
+
+  // Case-insensitive in-process search across name and sku
+  if (searchTerm) {
+    const lower = searchTerm.toLowerCase();
+    products = products.filter((p) =>
+      p.name.toLowerCase().includes(lower) ||
+      (p.sku && String(p.sku).toLowerCase().includes(lower))
+    );
+  }
+
   res.json({
-    data: result.data.map(mapProduct),
+    data: products,
     meta: result.meta || null,
   });
 });

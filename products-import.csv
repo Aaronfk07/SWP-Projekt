@@ -1,0 +1,16 @@
+title,description,price,image,slug,availability,status,sku
+Vitamin C 1000mg,"Hochdosiertes Vitamin C zur Stärkung des Immunsystems. 90 Tabletten pro Packung.",12.99,,vitamin-c-1000mg,in_stock,published,SKU-001
+Omega-3 Fischöl,"Hochwertiges Omega-3 aus nachhaltigem Fischfang. Unterstützt Herz und Gehirn. 60 Kapseln.",18.49,,omega-3-fischoel,in_stock,published,SKU-002
+Magnesium 400mg,"Magnesium für Muskeln und Nerven. Ideal bei Krämpfen und Stress. 120 Tabletten.",9.99,,magnesium-400mg,in_stock,published,SKU-003
+Vitamin D3 2000 IE,"Vitamin D3 für Knochen, Immunsystem und Wohlbefinden. 180 Kapseln.",14.99,,vitamin-d3-2000ie,in_stock,published,SKU-004
+Zink 25mg,"Zink unterstützt das Immunsystem und die Hautgesundheit. 100 Tabletten.",7.49,,zink-25mg,in_stock,published,SKU-005
+Probiotika Komplex,"10 Bakterienstämme für eine gesunde Darmflora. 30 Kapseln.",22.99,,probiotika-komplex,in_stock,published,SKU-006
+Kollagen Pulver,"Hydrolysiertes Kollagen für Haut, Haare und Gelenke. 300g Pulver.",29.99,,kollagen-pulver,low_stock,published,SKU-007
+Ashwagandha 500mg,"Adaptogenes Kraut zur Stressreduktion und Entspannung. 60 Kapseln.",16.99,,ashwagandha-500mg,in_stock,published,SKU-008
+Curcuma & Pfeffer,"Curcumin mit Piperin für maximale Bioverfügbarkeit. Entzündungshemmend. 90 Kapseln.",13.49,,curcuma-pfeffer,in_stock,published,SKU-009
+B-Komplex,"Alle 8 B-Vitamine in einer Kapsel. Für Energie und Nervensystem. 60 Kapseln.",11.99,,b-komplex,in_stock,published,SKU-010
+Eisen 14mg,"Gut verträgliches Eisen-Bisglycinate. Ideal bei Eisenmangel. 90 Kapseln.",8.99,,eisen-14mg,in_stock,published,SKU-011
+Melatonin 1mg,"Natürliches Einschlafhilfe für erholsamen Schlaf. 60 Tabletten.",6.99,,melatonin-1mg,in_stock,published,SKU-012
+Coenzym Q10 100mg,"Q10 für Zellenergie und Herzgesundheit. 60 Kapseln.",24.99,,coenzym-q10-100mg,low_stock,published,SKU-013
+Spirulina Tabletten,"Nährstoffreiches Superfood aus Mikroalgen. 200 Tabletten.",15.99,,spirulina-tabletten,in_stock,published,SKU-014
+Whey Protein Vanilla,"Hochwertiges Molkenprotein mit Vanillegeschmack. 1kg Beutel.",34.99,,whey-protein-vanilla,in_stock,published,SKU-015
